@@ -66,7 +66,7 @@ static s32 ampDb[4];
 // keeping them here is clean and maintainable,
 // at the cost of a little code space.
 static const int ampParamId[] = { eParam_adc0,
-			    eParam_adc1,
+                                  eParam_adc1,
 			    eParam_adc2,
 			    eParam_adc3 };
 
@@ -153,7 +153,7 @@ static void ctl_set_amp(u32 ch) {
     ctl_param_change(ampParamId[ch], ampLin[ch]);
   }
   // update graphics
-  render_chan(ch);
+  // render_chan(ch);
 }
 
 // set mute flag for a channel
@@ -168,5 +168,5 @@ static void ctl_set_mute(u32 ch, bool val) {
     ctl_param_change(ampParamId[ch], ampLin[ch]);
   }
   // update graphics
-  render_chan(ch);
+  // render_chan(ch);
 }

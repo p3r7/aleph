@@ -1,5 +1,6 @@
 #include "lualink.h"
 #include "print_funcs.h"
+#include "render.h"
 
 #include <stdio.h>
 #include <string.h> // strcmp(), strlen()
@@ -72,6 +73,13 @@ void Lua_DeInit(void)
     lua_close(L);
 }
 
+#define STRING_NUM(n) #n
+#define LUA_ARG_ERROR(n) "error: requires " STRING_NUM(n) " arguments"
+#define lua_check_num_args(n)                   \
+    if (lua_gettop(L) != n) {                   \
+        return luaL_error(L, LUA_ARG_ERROR(n)); \
+    }
+
 // C-fns accessible to lua
 
 // NB these static functions are prefixed  with '_'
@@ -82,10 +90,23 @@ static int _debug( lua_State *L )
 {
     const char* msg = luaL_checkstring(L, 1);
     lua_pop( L, 1 );
-    char str[80];
-    sprintf(str, "%s\n", (char*)msg);
-    print_dbg(str);
+    /* char str[80];
+     * sprintf(str, "%s\n", (char*)msg);
+     * print_dbg(str); */
+    print_dbg(msg);
     lua_settop(L, 0);
+    return 0;
+}
+
+static int _screen_text( lua_State *L ) {
+    lua_check_num_args(1);
+    clearln();
+    appendln((const char*)luaL_checkstring(L, 1));
+    endln();
+    lua_settop(L, 0);
+
+    font_string_region_clip(lineRegion, lineBuf, 0, 0, 0xa, 0);
+
     return 0;
 }
 
@@ -95,6 +116,8 @@ static const struct luaL_Reg libCrow[]=
     {
         // { "c_dofile"         , l_bootstrap_dofile },
         { "debug_usart"      , _debug            },
+        // screen
+        { "screen_text"      , _screen_text      },
 
         { NULL               , NULL              }
     };
