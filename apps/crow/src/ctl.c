@@ -39,6 +39,7 @@
 #include "app_timers.h"
 #include "ctl.h"
 #include "render.h"
+#include "ser.h"
 //#include "scaler.h"
 
 //#include "util.h"
@@ -130,14 +131,14 @@ extern void ctl_inc_level(u32 ch, s32 inc) {
   s32 l;
   ch &= 3;
   // clamp increment to prevent overflow
-  if(inc < -65000) { inc = -65000; print_dbg("\r\n !! clamp inc low");  }
-  if(inc > 65000) { inc = 65000; print_dbg("\r\n !! clamp inc high"); }
+  if(inc < -65000) { inc = -65000; ser_println(" !! clamp inc low");  }
+  if(inc > 65000) { inc = 65000; ser_println(" !! clamp inc high"); }
   l = level[ch] + inc;
 
   ctl_set_amp(ch);
   level[ch] = l;
-  print_dbg("\r\n changed level control: 0x");
-  print_dbg_hex(l);
+  ser_println(" changed level control: 0x");
+  ser_println_hex(l);
 }
 
 //-----------------------------------

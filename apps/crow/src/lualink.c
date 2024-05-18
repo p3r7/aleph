@@ -1,6 +1,7 @@
 #include "lualink.h"
 #include "print_funcs.h"
 #include "render.h"
+#include "ser.h"
 
 #include <stdio.h>
 #include <string.h> // strcmp(), strlen()
@@ -27,7 +28,6 @@ static float Lua_check_memory( void );
 static int Lua_call_usercode( lua_State* L, int nargs, int nresults );
 static int Lua_handle_error( lua_State* L );
 static void timeouthook( lua_State* L, lua_Debug* ar );
-void print_ser(const char* msg);
 
 lua_State* L; // global access for 'reset-environment'
 
@@ -56,7 +56,7 @@ lua_State* Lua_ReInit_Environment(lua_State* L){
 
 lua_State* Lua_Reset( void )
 {
-    print_dbg("\r\n Lua_Reset");
+    ser_println(" Lua_Reset");
 
     /* // cleanup any C-based event generators
      * Metro_stop_all();
@@ -99,10 +99,7 @@ static int _debug( lua_State *L )
 {
     const char* msg = luaL_checkstring(L, 1);
     lua_pop( L, 1 );
-    /* char str[80];
-     * sprintf(str, "%s\n", (char*)msg);
-     * print_dbg(str); */
-    print_dbg(msg);
+    ser_println(msg);
     lua_settop(L, 0);
     return 0;
 }
@@ -141,17 +138,6 @@ static void Lua_linkctolua( lua_State *L )
     }
 }
 
-void print_ser(const char* msg) {
-    print_dbg("\r\n ");
-    print_dbg(msg);
-}
-
-void print_ser_err(const char* msg) {
-    print_dbg("\r\n ");
-    print_dbg("error: ");
-    print_dbg(msg);
-}
-
 uint8_t Lua_eval( lua_State*     L
                   , const char*    script
                   , size_t         script_len
@@ -159,7 +145,7 @@ uint8_t Lua_eval( lua_State*     L
                   ){
     int error = luaL_loadbuffer( L, script, script_len, chunkname );
     if( error != LUA_OK ){
-        print_ser_err((char*)lua_tostring( L, -1 ));
+        ser_println_err((char*)lua_tostring( L, -1 ));
         lua_pop( L, 1 );
         return 1;
     }
@@ -167,10 +153,10 @@ uint8_t Lua_eval( lua_State*     L
     if( (error |= Lua_call_usercode( L, 0, 0 )) != LUA_OK ){
         lua_pop( L, 1 );
         switch( error ){
-        case LUA_ERRSYNTAX: print_ser_err("syntax error."); break;
-        case LUA_ERRMEM:    print_ser_err("not enough memory."); break;
-        case LUA_ERRRUN:    print_ser_err("runtime error."); break;
-        case LUA_ERRERR:    print_ser_err("error in error handler."); break;
+        case LUA_ERRSYNTAX: ser_println_err("syntax error."); break;
+        case LUA_ERRMEM:    ser_println_err("not enough memory."); break;
+        case LUA_ERRRUN:    ser_println_err("runtime error."); break;
+        case LUA_ERRERR:    ser_println_err("error in error handler."); break;
         default: break;
         }
         return 1;
@@ -193,7 +179,7 @@ volatile int watchdog = WATCHDOG_COUNT;
 static void timeouthook( lua_State* L, lua_Debug* ar )
 {
     if( --watchdog <= 0 ){
-        print_ser("CPU timed out.");
+        ser_println("CPU timed out.");
         lua_sethook(L, timeouthook, LUA_MASKLINE, 0); // error until top
         luaL_error(L, "user code timeout exceeded");
     }
@@ -214,7 +200,7 @@ static int Lua_handle_error( lua_State *L )
     }
     luaL_traceback( L, L, msg, 1 );
     char* traceback = (char*)lua_tostring( L, -1 );
-    print_ser(traceback);
+    ser_println(traceback);
     return 1;
 }
 
