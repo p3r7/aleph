@@ -30,6 +30,7 @@ CSRCS += \
 	$(APP_DIR)/src/ctl.c \
 	$(APP_DIR)/src/handler.c \
 	$(APP_DIR)/src/render.c \
+	$(APP_DIR)/src/ser.c \
 	$(APP_DIR)/src/lualink.c
 
 # List of assembler source files.

@@ -16,9 +16,18 @@
 // thus keeping the lua VM as free as possible
 // #include "l_bootstrap.h"
 
+
+#define WATCHDOG_FREQ      0x100000 // ~1s how often we run the watchdog
+#define WATCHDOG_COUNT     2        // how many watchdogs before 'frozen'
+
+
 // Private prototypes
 static void Lua_linkctolua( lua_State* L );
 static float Lua_check_memory( void );
+static int Lua_call_usercode( lua_State* L, int nargs, int nresults );
+static int Lua_handle_error( lua_State* L );
+static void timeouthook( lua_State* L, lua_Debug* ar );
+void print_ser(const char* msg);
 
 lua_State* L; // global access for 'reset-environment'
 
@@ -132,6 +141,43 @@ static void Lua_linkctolua( lua_State *L )
     }
 }
 
+void print_ser(const char* msg) {
+    print_dbg("\r\n ");
+    print_dbg(msg);
+}
+
+void print_ser_err(const char* msg) {
+    print_dbg("\r\n ");
+    print_dbg("error: ");
+    print_dbg(msg);
+}
+
+uint8_t Lua_eval( lua_State*     L
+                  , const char*    script
+                  , size_t         script_len
+                  , const char*    chunkname
+                  ){
+    int error = luaL_loadbuffer( L, script, script_len, chunkname );
+    if( error != LUA_OK ){
+        print_ser_err((char*)lua_tostring( L, -1 ));
+        lua_pop( L, 1 );
+        return 1;
+    }
+
+    if( (error |= Lua_call_usercode( L, 0, 0 )) != LUA_OK ){
+        lua_pop( L, 1 );
+        switch( error ){
+        case LUA_ERRSYNTAX: print_ser_err("syntax error."); break;
+        case LUA_ERRMEM:    print_ser_err("not enough memory."); break;
+        case LUA_ERRRUN:    print_ser_err("runtime error."); break;
+        case LUA_ERRERR:    print_ser_err("error in error handler."); break;
+        default: break;
+        }
+        return 1;
+    }
+    return 0;
+}
+
 static float Lua_check_memory( void )
 {
     lua_getglobal(L,"collectgarbage");
@@ -140,4 +186,50 @@ static float Lua_check_memory( void )
     float mem = luaL_checknumber(L, 1);
     lua_pop(L,1);
     return mem;
+}
+
+// Watchdog timer for infinite looped Lua scripts
+volatile int watchdog = WATCHDOG_COUNT;
+static void timeouthook( lua_State* L, lua_Debug* ar )
+{
+    if( --watchdog <= 0 ){
+        print_ser("CPU timed out.");
+        lua_sethook(L, timeouthook, LUA_MASKLINE, 0); // error until top
+        luaL_error(L, "user code timeout exceeded");
+    }
+}
+
+static int Lua_handle_error( lua_State *L )
+{
+    const char *msg = lua_tostring( L, 1 );
+    if( msg == NULL ){
+        if( luaL_callmeta( L, 1, "__tostring" )
+            && lua_type ( L, -1 ) == LUA_TSTRING ) {
+            return 1;
+        } else {
+            msg = lua_pushfstring( L
+                                   , "(error object is a %s value)"
+                                   , luaL_typename( L, 1 ) );
+        }
+    }
+    luaL_traceback( L, L, msg, 1 );
+    char* traceback = (char*)lua_tostring( L, -1 );
+    print_ser(traceback);
+    return 1;
+}
+
+static int Lua_call_usercode( lua_State* L, int nargs, int nresults )
+{
+    lua_sethook(L, timeouthook, LUA_MASKCOUNT, WATCHDOG_FREQ); // reset timeout hook
+    watchdog = WATCHDOG_COUNT; // reset timeout hook counter
+
+    int errFunc = lua_gettop(L) - nargs;
+    lua_pushcfunction( L, Lua_handle_error );
+    lua_insert( L, errFunc );
+    int status = lua_pcall(L, nargs, nresults, errFunc);
+    lua_remove( L, errFunc );
+
+    lua_sethook(L, timeouthook, 0, 0);
+
+    return status;
 }

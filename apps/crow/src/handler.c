@@ -32,6 +32,7 @@
 #include "ctl.h"
 #include "handler.h"
 #include "render.h"
+#include "ser.h"
 
 
 //--------------------------------------
@@ -124,6 +125,9 @@ void assign_event_handlers(void) {
   app_event_handlers[kEventEncoder1 ] = &handle_Encoder1 ;
   app_event_handlers[kEventEncoder2 ] = &handle_Encoder2 ;
   app_event_handlers[kEventEncoder3 ] = &handle_Encoder3 ;
+
+  // TTY
+  app_event_handlers[ kEventSerial ] = &handle_Serial ;
 
   /*
   add more event handlers here as desired.
