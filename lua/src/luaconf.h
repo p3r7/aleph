@@ -11,6 +11,8 @@
 #include <limits.h>
 #include <stddef.h>
 
+// stdio bindings for SD card (through `fat_filelib.h`)
+#include "fat_filelib_comp.h"
 
 /*
 ** ===================================================================
