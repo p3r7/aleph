@@ -9,6 +9,7 @@
 lua_State* Lua_Init(void);
 lua_State* Lua_Reset(void);
 void Lua_DeInit(void);
+void Lua_load_entrypoint( void );
 
 lua_State* Lua_ReInit_Environment(lua_State*);
 

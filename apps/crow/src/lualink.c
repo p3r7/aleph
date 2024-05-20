@@ -77,6 +77,11 @@ lua_State* Lua_Reset( void )
     return Lua_ReInit_Environment(L);
 }
 
+void Lua_load_entrypoint( void )
+{
+    luaL_loadfile(L, "/lua/core/aleph.lua");
+}
+
 void Lua_DeInit(void)
 {
     lua_close(L);

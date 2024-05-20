@@ -51,6 +51,7 @@ u8 app_launch(eLaunchState state) {
   print_dbg("\r\n initialising crow...");
 
   Lua_Init();
+  Lua_load_entrypoint();
 
   //// startup using default DSP name
   // files_load_dsp_name("waves.ldr");
