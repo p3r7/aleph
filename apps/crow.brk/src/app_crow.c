@@ -28,6 +28,18 @@
 
 #include "lualink.h"
 
+
+// ------------------------------------------------------------------------
+// conf
+
+// stdio bindings for SD card (through `fat_filelib.h`)
+// #define USE_FILELIB_STDIO_COMPAT_NAMES
+// #include "filesystem.h"
+
+
+// ------------------------------------------------------------------------
+// lifecycle
+
 // this is called during hardware initialization.
 // allocate memory here.
 void app_init(void) {

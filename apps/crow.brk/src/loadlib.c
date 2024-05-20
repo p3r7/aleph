@@ -414,9 +414,9 @@ static int ll_loadlib (lua_State *L) {
 
 
 static int readable (const char *filename) {
-  FILE *f = fopen(filename, "r");  /* try to open file */
+  void *f = fl_fopen(filename, "r");  /* try to open file */
   if (f == NULL) return 0;  /* open failed */
-  fclose(f);
+  fl_fclose(f);
   return 1;
 }
 
@@ -787,4 +787,3 @@ LUAMOD_API int luaopen_package (lua_State *L) {
   lua_pop(L, 1);  /* pop global table */
   return 1;  /* return 'package' table */
 }
-

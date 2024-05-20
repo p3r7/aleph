@@ -18,8 +18,8 @@ LUAS=$(APP_DIR)/../../lua/src
 LUACORE_SRC=	lapi.c lcode.c lctype.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.c \
 		lmem.c lobject.c lopcodes.c lparser.c lstate.c lstring.c ltable.c \
 		ltm.c lundump.c lvm.c lzio.c
-LUALIB_SRC=	lauxlib.c lbaselib.c lbitlib.c lcorolib.c ldblib.c liolib.c \
-		lmathlib.c loslib.c lstrlib.c ltablib.c lutf8lib.c loadlib.c linit.c
+LUALIB_SRC=	lauxlib.c lbaselib.c lbitlib.c lcorolib.c liolib.c \
+		lmathlib.c loslib.c lstrlib.c ltablib.c loadlib.c linit.c
 
 CSRCS += $(addprefix $(LUAS)/,$(LUACORE_SRC) $(LUALIB_SRC) )
 
