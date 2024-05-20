@@ -1,6 +1,3 @@
 [submodule "libavr32"]
 	path = libavr32
 	url = https://github.com/p3r7/libavr32
-[submodule "lua"]
-	path = lua
-	url = https://github.com/trentgill/lua/
