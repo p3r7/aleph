@@ -1,7 +1,7 @@
 /*
-  app_crow.c
+  app_apis.c
 
-  aleph/app/crow
+  aleph/app/apis
 
   required app-specific implementation of avr32_lib/src/app.h
 */
@@ -48,10 +48,10 @@ u8 app_launch(eLaunchState state) {
   print_dbg("\r\n launching app with state: ");
   print_dbg_ulong(state);
 
-  print_dbg("\r\n initialising crow...");
+  print_dbg("\r\n initialising apis...");
 
   Lua_Init();
-  Lua_load_entrypoint();
+  // Lua_load_entrypoint();
 
   //// startup using default DSP name
   // files_load_dsp_name("waves.ldr");

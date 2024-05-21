@@ -4,7 +4,7 @@
 # --- this is included via the ASF utility makefile.
 
 # app name
-APP = crow
+APP = apis
 
 # baudrate! can override in make invocation
 BAUD = 115200
@@ -29,7 +29,7 @@ CSRCS += $(addprefix $(LUAS)/,$(LUACORE_SRC) $(LUALIB_SRC) )
 
 # app sources
 CSRCS += \
-	$(APP_DIR)/src/app_crow.c \
+	$(APP_DIR)/src/app_apis.c \
 	$(APP_DIR)/src/app_timers.c \
 	$(APP_DIR)/src/ctl.c \
 	$(APP_DIR)/src/handler.c \

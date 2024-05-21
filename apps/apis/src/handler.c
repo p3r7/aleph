@@ -1,7 +1,7 @@
 /*
   handler.c
 
-  aleph/app/crow
+  aleph/app/apis
 
   app-specific UI event handlers.
 

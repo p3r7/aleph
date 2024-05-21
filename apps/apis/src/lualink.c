@@ -125,7 +125,7 @@ static int _screen_text( lua_State *L ) {
 }
 
 // array of all the available functions
-static const struct luaL_Reg libCrow[]=
+static const struct luaL_Reg libApis[]=
     // bootstrap
     {
         // { "c_dofile"         , l_bootstrap_dofile },
@@ -141,8 +141,8 @@ static void Lua_linkctolua( lua_State *L )
 {
     // Make C fns available to Lua
     uint8_t fn = 0;
-    while( libCrow[fn].func != NULL ){
-        lua_register( L, libCrow[fn].name, libCrow[fn].func );
+    while( libApis[fn].func != NULL ){
+        lua_register( L, libApis[fn].name, libApis[fn].func );
         fn++;
     }
 }
