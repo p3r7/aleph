@@ -17,6 +17,22 @@ int my_fgetc(FILE *stream) {
     return fl_fgetc((FL_FILE *)stream);
 }
 
+size_t fake_fread(volatile u8* dst, u32 size, void* fp) {
+    u8 c;
+    size_t n = 0;
+    while(n < size) {
+        // *dst = fl_fgetc(fp);
+        c = fl_fgetc(fp);
+        if (c == EOF) {
+            break;
+        }
+        *dst = c;
+        n++;
+         dst++;
+     }
+     return n;
+}
+
 char *my_fgets(char *str, int num, FILE *stream) {
     return fl_fgets(str, num, (FL_FILE *)stream);
 }
@@ -34,7 +50,10 @@ size_t my_fwrite(const void *ptr, size_t size, size_t count, FILE *stream) {
 }
 
 size_t my_fread(void *ptr, size_t size, size_t count, FILE *stream) {
-    return fl_fread(ptr, size, count, (FL_FILE *)stream);
+    // NB: buggy w/ files other a certain size
+    // return fl_fread(ptr, size, count, (FL_FILE *)stream);
+
+    return fake_fread(ptr, count, (FL_FILE *)stream);
 }
 
 int my_fseek(FILE *stream, long int offset, int whence) {
