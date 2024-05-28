@@ -49,11 +49,41 @@ size_t my_fwrite(const void *ptr, size_t size, size_t count, FILE *stream) {
     return fl_fwrite(ptr, size, count, (FL_FILE *)stream);
 }
 
-size_t my_fread(void *ptr, size_t size, size_t count, FILE *stream) {
-    // NB: buggy w/ files other a certain size
-    // return fl_fread(ptr, size, count, (FL_FILE *)stream);
+/* size_t my_fread(void *ptr, size_t size, size_t count, FILE *stream) {
+ *     // NB: buggy w/ files other a certain size
+ *     // return fl_fread(ptr, size, count, (FL_FILE *)stream);
+ *
+ *     return fake_fread(ptr, count, (FL_FILE *)stream);
+ * } */
 
-    return fake_fread(ptr, count, (FL_FILE *)stream);
+size_t my_fread(void *ptr, size_t size, size_t count, FILE *stream) {
+    size_t n = 0;
+    size_t total_bytes = 0;
+    u8 *dst = (u8*) ptr;
+
+    for (size_t i = 0; i < count; i++) {
+        size_t bytes_read_for_block = 0;
+
+        for (size_t j = 0; j < size; j++) {
+            int c = fl_fgetc(stream);
+            // if (fl_feof(ptr) == EOF) {
+            if (c == EOF) {
+                return n;
+            }
+            *dst++ = (u8) c;
+            bytes_read_for_block++;
+        }
+
+        if (bytes_read_for_block == size) {
+            n++;
+            total_bytes += bytes_read_for_block;
+        } else {
+            break;
+        }
+    }
+
+    // nb blocks read
+    return n;
 }
 
 int my_fseek(FILE *stream, long int offset, int whence) {
