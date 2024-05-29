@@ -3,6 +3,7 @@
 
 #include <stdio.h>  // For FILE, size_t
 #include "fat_filelib.h"
+#include "types.h"
 
 // File Operations
 FILE *my_fopen(const char *filename, const char *mode);
