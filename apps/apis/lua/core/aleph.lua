@@ -16,8 +16,6 @@ aleph.platform = 2
 -- ------------------------------------------------------------------------
 -- paths
 
-local tab = require 'tabutil'
-
 local lua_root = "/lua"
 local lua_script_root = "/code"
 local core = lua_root .. "/core/?.lua;"
@@ -25,6 +23,8 @@ local lib = lua_root .. "/lib/?.lua;"
 local code = lua_script_root .. "/?.lua;"
 
 package.path = core .. lib .. package.path
+
+local tab = require 'tabutil'
 
 -- local p = _path
 -- p.this = tab.readonly{
