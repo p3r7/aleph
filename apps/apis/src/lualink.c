@@ -107,6 +107,7 @@ static int _debug( lua_State *L )
     /* char str[80];
      * sprintf(str, "%s\n", (char*)msg);
      * print_dbg(str); */
+    print_dbg("\r\n ");
     print_dbg(msg);
     lua_settop(L, 0);
     return 0;
