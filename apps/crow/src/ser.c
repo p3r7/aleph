@@ -1,4 +1,4 @@
-#include <stdio.h>
+/* #include <stdio.h> */
 /* #include <avr/io.h> */
 #include "ser.h"
 #include "serial.h"
@@ -12,44 +12,6 @@
 lua_State* L;
 
 static u16 serial_read_pos = 0;
-
-
-// ------------------------------------------------------------------------
-// outptut
-
-void ser_print_char(char c) {
-    usart_putchar(DEV_USART, c);
-}
-
-// NB: same impl as `print_dbg` in aleph/utils/avr32_sim/src/print_funcs.c
-void ser_print(const char* str) {
-    printf("%s",str);
-}
-
-void ser_println(const char* str) {
-    printf("%s\r\n",str);
-}
-
-void ser_println_err(const char* msg) {
-    ser_print("error: ");
-    ser_println(msg);
-}
-
-void ser_println_ulong(unsigned long n) {
-    printf("%ul\r\n", (unsigned int)n);
-}
-
-void ser_println_hex(unsigned long n) {
-    printf("%08x\r\n", (unsigned int)n);
-}
-
-void ser_prompt() {
-    ser_print(">> ");
-}
-
-
-// ------------------------------------------------------------------------
-// input
 
 void recv_char (char c) {
     usart_putchar(DEV_USART, c);
@@ -67,15 +29,18 @@ void recv_char (char c) {
         serialInputLineBuffer[serialInputLineBufferPos] = '\0';
         serialInputLineBufferPos++;
 
-        ser_println("");
-        ser_prompt();
+        usart_putchar(DEV_USART, '\r');
+        usart_putchar(DEV_USART, '\n');
+        print_dbg(">> ");
+
+        // print_dbg("\r\nevaluating lua: ");
+        // print_dbg((const char*)serialInputLineBuffer);
 
         if(Lua_eval(L, (const char*)serialInputLineBuffer, serialInputLineBufferPos-2, "=repl")) {
-            ser_println("err - failed eval");
+            print_dbg("\r\n!eval");
         }
 
-        ser_println("");
-        ser_prompt();
+        print_dbg("\r\n>> ");
 
         serialInputLineBufferPos = 0;
     }

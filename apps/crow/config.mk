@@ -14,6 +14,9 @@ include ../aleph_avr32_config.mk
 # avr32 sources
 include ../aleph_avr32_src.mk
 
+# CSRCS += $(APP_DIR)/../../avr32/src/fat_io_lib/fat_filelib_comp.h
+CSRCS += $(APP_DIR)/src/fat_filelib_comp.h
+
 LUAS=$(APP_DIR)/../../lua/src
 LUACORE_SRC=	lapi.c lcode.c lctype.c ldebug.c ldo.c ldump.c lfunc.c lgc.c llex.c \
 		lmem.c lobject.c lopcodes.c lparser.c lstate.c lstring.c ltable.c \

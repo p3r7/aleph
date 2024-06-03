@@ -1,7 +1,7 @@
 /* files.c
    bees
    aleph
-
+  
    filesystem routines
 */
 
@@ -13,7 +13,7 @@
 #include "delay.h"
 #include "print_funcs.h"
 
-// aleph-common
+// aleph-common 
 #include "module_common.h"
 
 // aleph-avr32
@@ -28,7 +28,7 @@
 #include "render.h"
 
 // ---- directory list class
-// params
+// params 
 #define DIR_LIST_MAX_NUM 64
 #define DIR_LIST_NAME_LEN 64
 #define DIR_LIST_NAME_LEN_1 63
@@ -36,9 +36,8 @@
 #define DIR_LIST_PATH_LEN 64
 #define DIR_LIST_EXT_LEN 8
 
-#define DSP_PATH      "/mod/"
+#define DSP_PATH     "/mod/"
 #define SCALERS_PATH  "/data/bees/scalers/"
-#define LUA_PATH      "/lua/"
 
 // endinanness
 // #define SCALER_LE 1
@@ -109,7 +108,7 @@ bool check_ext(char* str, const char* extB ) {
   int dotpos = -1;
   char* extA = NULL;
   bool res;
-
+ 
   i = strlen(str);
   while(i > 0) {
     --i;
@@ -118,8 +117,8 @@ bool check_ext(char* str, const char* extB ) {
       extA = str + i;
       break;
     }
-  }
-  if(i < 0) {
+  } 
+  if(i < 0) { 
     // no extension
     return 0;
   } else {
@@ -140,7 +139,7 @@ bool strip_ext(char* str) {
       dotpos = i;
       break;
     }
-  }
+  } 
   if(dotpos >= 0) {
     str[dotpos] = '\0';
     return 1;
@@ -165,7 +164,7 @@ const volatile char* files_get_dsp_name(u8 idx) {
 }
 
 // load a blacfkin executable by index */
-u8 files_load_dsp(u8 idx) {
+u8 files_load_dsp(u8 idx) {  
   //  app_notify("loading dsp...");
   return files_load_dsp_name((const char*)files_get_dsp_name(idx));
 }
@@ -242,7 +241,7 @@ u8 files_load_scaler_name(const char* name, s32* dst, u32 dstSize) {
 
   app_pause();
   fp = list_open_file_name(&scalerList, name, "r", &size);
-  if( fp != NULL) {
+  if( fp != NULL) {	  
 
 #ifdef SCALER_LE
     swap.b[3] = fl_fgetc(fp);
@@ -314,7 +313,7 @@ u8 files_load_scaler_name(const char* name, s32* dst, u32 dstSize) {
     ret = 1;
   } else {
     ret = 0;
-  }
+  } 
 
 
   ///// TEST: verify
@@ -334,7 +333,7 @@ const char* list_get_name(dirList_t* list, u8 idx) {
 }
 
 void list_fill(dirList_t* list, const char* path, const char* ext) {
-  FL_DIR dirstat;
+  FL_DIR dirstat; 
   struct fs_dir_ent dirent;
   int i;
 
@@ -347,7 +346,7 @@ void list_fill(dirList_t* list, const char* path, const char* ext) {
   strcpy(list->path, path);
   strcpy(list->ext, ext);
 
-  if( fl_opendir(path, &dirstat) ) {
+  if( fl_opendir(path, &dirstat) ) {      
     while (fl_readdir(&dirstat, &dirent) == 0) {
       if( !(dirent.is_dir) ) {
 
@@ -382,13 +381,13 @@ void* list_open_file_name(dirList_t* list, const char* name, const char* mode, u
   strncat(nameTry, list->ext, DIR_LIST_NAME_LEN);
 
   if(fl_opendir(path, &dirstat)) {
-
+    
     while (fl_readdir(&dirstat, &dirent) == 0) {
 
       if (strcmp(dirent.filename, nameTry) == 0) {
 	strncat(path, dirent.filename, 58);
-
-
+	
+      
 	fp = fl_fopen(path, mode);
 	*size = dirent.size;
 	break;
@@ -403,3 +402,6 @@ void* list_open_file_name(dirList_t* list, const char* name, const char* mode, u
   }
   return fp;
 }
+
+
+

@@ -44,6 +44,7 @@
 #include "flash.h"
 #include "font.h"
 #include "ftdi.h"
+#include "cdc.h"
 #include "global.h"
 #include "i2c.h"
 #include "init.h"
@@ -108,6 +109,10 @@ static void handler_FtdiDisconnect(s32 data) {
     event_post(&e);
 }
 
+static void handler_SerialConnect(s32 data) {
+    monome_setup_mext();
+}
+
 static void handler_MonomeConnect(s32 data) {
     // this just stores a flag to re-send connection event to app
     if (!launch) {
@@ -163,6 +168,8 @@ static inline void assign_main_event_handlers(void) {
     app_event_handlers[kEventSwitch7] = &dummy_handler;
     app_event_handlers[kEventFtdiConnect] = &handler_FtdiConnect;
     app_event_handlers[kEventFtdiDisconnect] = &handler_FtdiDisconnect;
+    app_event_handlers[kEventSerialConnect] = &handler_SerialConnect;
+    app_event_handlers[kEventSerialDisconnect] = &handler_FtdiDisconnect;
     app_event_handlers[kEventMonomeConnect] = &handler_MonomeConnect;
     app_event_handlers[kEventMonomeDisconnect] = &dummy_handler;
     app_event_handlers[kEventMonomePoll] = &handler_MonomePoll;
